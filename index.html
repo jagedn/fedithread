@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FediThread, thread for Fediverse</title>
+    <link rel="stylesheet" href="https://bulma.io/vendor/fontawesome-free-5.15.2-web/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="mastodon.js"></script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-full">
+                    <form method="post" action="#" id="sbmt">
+                        <div class="field is-horizontal has-addons">
+                            <div class="field-label is-normal">
+                                <label class="label">Instance</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="field has-addons">
+                                    <p class="control has-icon has-icons-left">
+                                        <input class="input is-primary" type="text" id="mastodon_url" placeholder="https://mstdn.jp, https://mastodon.social ..." required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-chain"></i>
+                                        </span>
+                                    </p>
+                                    <p class="control">
+                                        <button class="button is-primary" type="submit" id="btn" name="btn">Login</button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section authorized is-hidden">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8 is-offset-two-quarter">
+                    <div class="box">
+                        <div class="field is-horizontal has-addons">
+                            <div class="control">
+                                <p class="buttons">
+                                    <button class="button is-success" id="btnSave" name="btnSave">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                        <span>Save</span>
+                                    </button>
+                                    <button class="button is-danger is-outlined" id="btnDelete" name="btnDelete">
+                                        <span>Delete</span>
+                                        <span class="icon is-small">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                                    </button>
+                                    <button class="button is-info is-outlined" id="btnPublish" name="btnPublish">
+                                        <span>Publish</span>
+                                        <span class="icon is-small">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </span>
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8 is-offset-two-quarter" id="fediThread">
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                By @jorge@jvm.social
+            </p>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+
+</html>
