@@ -8,7 +8,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "build-github": "vite build --public-path=https://jagedn.github.io/fedithread/",
+    "build-github": "vite build --base=https://jagedn.github.io/fedithread/",
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
