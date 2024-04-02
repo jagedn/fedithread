@@ -92,6 +92,8 @@ if (!instance.getUser()) {
     <Card>
       <template #header>
         {{ currentUser?.url }}
+        <br/>
+        Made with love by jorge@social.aguilera.soy
       </template>
       <template #content>
         <Toolbar>
@@ -131,9 +133,10 @@ if (!instance.getUser()) {
         </template>
         <template #footer>
           <div class="flex gap-3 mt-1">
-            <span v-for="(f,fidx) in t.files">
+            <div class="flex flex-column gap-2" v-for="(f,fidx) in t.files">
               <Image width="100" :src="f.preview" :data-image-toot="fidx" @click.stop="removeImage($event,t)"/>
-            </span>
+              <InputText v-model="f.description" />
+            </div>
           </div>
         </template>
       </Card>

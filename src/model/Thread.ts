@@ -24,6 +24,7 @@ export default class Thread{
             for (const i in map.toots[t].files) {
                 const e = map.toots[t].files[i];
                 const media = new Media(e.id, e.preview)
+                media.description = e.description;
                 toot.files.push(media);
             }
         }
@@ -48,6 +49,7 @@ export default class Thread{
                 e.files.push({
                     id: media.id,
                     preview: media.preview,
+                    description: media.description,
                 });
             }
             json.toots.push(e);
@@ -87,6 +89,12 @@ export default class Thread{
         let replyTo = '';
         for(const t in this.toots){
             const toot = this.toots[t]
+            for(const fi in toot.files){
+                const file = toot.files[fi];
+                await masto.v1.media.$select(file.id).update({
+                    description: file.description
+                })
+            }
             const mediaIds = toot.files.map(f=>f.id)
             const status = await masto.v1.statuses.create({
                 status: `${toot.index+1}/${this.toots.length}\n${toot.message}`,
@@ -104,10 +112,14 @@ export default class Thread{
             accessToken: accessToken,
         });
         const response = await masto.v1.media.create({
-            file: file
+            file: file,
         })
         const media = new Media(response.id, response.previewUrl)
         toot.files.push(media)
         return true
+    }
+
+    setImgDescription(toot:Toot, imgIdx: number, description: string){
+        toot.files[imgIdx].description = description;
     }
 }
