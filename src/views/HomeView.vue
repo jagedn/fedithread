@@ -124,7 +124,7 @@ if (!instance.getUser()) {
   <div class="grid absolute top-0 py-3 w-4 font-bold">
 
     <div class="col-12">
-      <Chip :label="currentUser?.url" image="/fediverse.png" />
+      <Chip :label="currentUser?.url" image="fediverse.png" />
     </div>
 
     <div class="col-12">
