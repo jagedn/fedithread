@@ -6,7 +6,41 @@ import {storeToRefs} from 'pinia';
 import Textarea from 'primevue/textarea';
 import type Toot from '@/model/Toot';
 import Image from 'primevue/image';
-import Toast from 'primevue/toast';
+import Menubar from 'primevue/menubar';
+import { ref } from "vue";
+import Chip from 'primevue/chip';
+
+const items = ref([
+  {
+    label: 'Save',
+    icon: 'pi pi-save',
+    command: () => {
+      save()
+    }
+  },
+  {
+    label: 'Clean',
+    icon: 'pi pi-trash',
+    command: () => {
+      clean()
+    }
+  },
+  {
+    label: 'Publish',
+    icon: 'pi pi-share-alt',
+    command: () => {
+      publish()
+    }
+  },
+  {
+    label: 'Logout',
+    icon: 'pi pi-sign-out',
+    command: () => {
+      logout()
+    }
+  }
+]);
+
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
@@ -87,60 +121,48 @@ if (!instance.getUser()) {
 </script>
 
 <template>
-  <div class="flex-column justify-content-center">
-    <Toast position="top-left"/>
-    <Card>
-      <template #header>
-        {{ currentUser?.url }}
-        <br/>
-        Made with love by jorge@social.aguilera.soy
-      </template>
-      <template #content>
-        <Toolbar>
-          <template #start>
-            <Button icon="pi pi-share-alt" class="mr-2" severity="primary" @click="publish"/>
-            <Button icon="pi pi-save" severity="secondary" @click="save"/>
-            <Button icon="pi pi-trash" severity="secondary" @click="clean"/>
-            <Button icon="pi pi-sign-out" class="mr-2" severity="secondary" @click="logout"/>
-          </template>
-        </Toolbar>
-      </template>
-    </Card>
+  <div class="grid absolute top-0 py-3 w-4 font-bold">
 
+    <div class="col-12">
+      <Chip :label="currentUser?.url" image="/fediverse.png" />
+    </div>
 
-    <div v-for="(t,idx) in thread?.toots">
-      <Card>
-        <template #header>
-          {{ idx + 1 }} / {{ thread?.toots.length }}
+    <div class="col-12">
+      <Menubar :model="items"/>
+    </div>
+
+    <div v-for="(t,idx) in thread?.toots" class="col-12 surface-100">
+      <Card class="bg-primary-reverse">
+        <template #title>
+          <span class="text-sm">{{ idx + 1 }} / {{ thread?.toots.length }}</span>
         </template>
         <template #content>
-          <p class="m-0">
-            <Textarea v-model="t.message" autoResize rows="5" cols="30" :maxlength="currentUser?.maxTootChars-5"/>
+          <p class="m-12">
+            <Textarea v-model="t.message" class="w-full" rows="5" :maxlength="currentUser?.maxTootChars-5"/>
           </p>
-          <div class="flex gap-3 mt-1">
-            <Toolbar>
-              <template #start>
-                <Button icon="pi pi-images" class="mr-2" severity="secondary" @click="addImage(t)" :disabled="t.files.length>2"/>
-                <Button icon="pi pi-plus" class="mr-2" severity="secondary" @click="addToot(t)"/>
-                <Button icon="pi pi-minus" class="mr-2" severity="secondary" v-if="idx!=0" @click="removeToot(t)"/>
-                <input :data-toot="t.index" class="file-input" type="file" accept="image/png, image/jpeg" @change="fileSelected($event,t)" hidden="true">
-              </template>
-              <template #end>
-                <span class="message-counter">{{ t.message.length }} / {{currentUser?.maxTootChars-5}}</span>
-              </template>
-            </Toolbar>
-          </div>
+          <Toolbar>
+            <template #start>
+              <span class="message-counter text-xs">{{ t.message.length }} / {{currentUser?.maxTootChars-5}}</span>
+            </template>
+            <template #end>
+              <Button icon="pi pi-images" class="mr-2" severity="secondary" @click="addImage(t)" :disabled="t.files.length>1"/>
+              <Button icon="pi pi-plus" class="mr-2" severity="secondary" @click="addToot(t)"/>
+              <Button icon="pi pi-minus" class="mr-2" severity="secondary" v-if="idx!=0" @click="removeToot(t)"/>
+              <input :data-toot="t.index" class="file-input" type="file" accept="image/png, image/jpeg" @change="fileSelected($event,t)" hidden="true">
+            </template>
+          </Toolbar>
         </template>
         <template #footer>
-          <div class="flex gap-3 mt-1">
-            <div class="flex flex-column gap-2" v-for="(f,fidx) in t.files">
-              <Image width="100" :src="f.preview" :data-image-toot="fidx" @click.stop="removeImage($event,t)"/>
-              <InputText v-model="f.description" />
+          <div class="grid">
+            <div class="col-6 grid" v-for="(f,fidx) in t.files">
+              <Image width="100" :src="f.preview" :data-image-toot="fidx" @click.stop="removeImage($event,t)" class="col-12"/>
+              <InputText v-model="f.description"  class="col-12"/>
             </div>
           </div>
         </template>
       </Card>
-      <hr/>
+
     </div>
+    <em>Made with love by jorge@social.aguilera.soy</em>
   </div>
 </template>

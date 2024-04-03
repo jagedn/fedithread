@@ -4,7 +4,7 @@ import Toast from 'primevue/toast';
 </script>
 
 <template>
-  <div class="w-full h-full">
+  <div>
     <Toast position="top-left"/>
     <RouterView />
   </div>
