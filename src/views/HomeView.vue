@@ -121,17 +121,17 @@ if (!instance.getUser()) {
 </script>
 
 <template>
-  <div class="grid absolute top-0 py-3 w-4 font-bold">
+  <div class="grid absolute top-0 py-3 lg:w-4 sm:w-4 font-bold">
 
-    <div class="col-12">
+    <div class="col-11">
       <Chip :label="currentUser?.url" image="fediverse.png" />
     </div>
 
-    <div class="col-12">
+    <div class="col-11">
       <Menubar :model="items"/>
     </div>
 
-    <div v-for="(t,idx) in thread?.toots" class="col-12 surface-100">
+    <div v-for="(t,idx) in thread?.toots" class="col-11 surface-100">
       <Card class="bg-primary-reverse">
         <template #title>
           <span class="text-sm">{{ idx + 1 }} / {{ thread?.toots.length }}</span>
