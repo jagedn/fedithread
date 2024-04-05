@@ -111,6 +111,14 @@ const removeImage=(event:Event, toot:Toot)=>{
   }
 }
 
+const tags = ref("")
+const setTags = (tag:string)=>{
+  thread.value?.setTags(tag)
+}
+
+const maxLength = ()=>{
+  return currentUser.value?.maxTootChars - (thread.value?.tags?.length || 0) - 5;
+}
 
 if (!instance.getUser()) {
   router.push('login')
@@ -131,34 +139,50 @@ if (!instance.getUser()) {
       <Menubar :model="items"/>
     </div>
 
+    <div class="col-11">
+      <div class="grid">
+        <span class="lg:col-1">Footer</span>
+        <InputText id="tags" v-model="tags" class="col-6"/>
+        <Chip icon="pi pi-tags" class="col-1" severity="secondary" @click="setTags(tags)" :disabled="!tags.length"/>
+        <Chip icon="pi pi-undo" class="col-1" severity="secondary" @click="setTags('')"/>
+      </div>
+    </div>
+
     <div v-for="(t,idx) in thread?.toots" class="col-11 surface-100">
       <Card class="bg-primary-reverse">
-        <template #title>
-          <span class="text-sm">{{ idx + 1 }} / {{ thread?.toots.length }}</span>
+
+        <template #header>
+          <div class="grid">
+            <Chip icon="pi pi-plus" class="col-1 col-offset-1" severity="secondary" @click="addToot(t)"/>
+            <Chip icon="pi pi-minus" class="col-1" severity="secondary" v-if="idx!=0" @click="removeToot(t)"/>
+          </div>
         </template>
+
         <template #content>
-          <p class="m-12">
-            <Textarea v-model="t.message" class="w-full" rows="5" :maxlength="currentUser?.maxTootChars-5"/>
-          </p>
-          <Toolbar>
-            <template #start>
-              <span class="message-counter text-xs">{{ t.message.length }} / {{currentUser?.maxTootChars-5}}</span>
-            </template>
-            <template #end>
-              <Button icon="pi pi-images" class="mr-2" severity="secondary" @click="addImage(t)" :disabled="t.files.length>1"/>
-              <Button icon="pi pi-plus" class="mr-2" severity="secondary" @click="addToot(t)"/>
-              <Button icon="pi pi-minus" class="mr-2" severity="secondary" v-if="idx!=0" @click="removeToot(t)"/>
-              <input :data-toot="t.index" class="file-input" type="file" accept="image/png, image/jpeg" @change="fileSelected($event,t)" hidden="true">
-            </template>
-          </Toolbar>
+          <div class="grid">
+            <span class="text-sm col-1">{{ idx + 1 }}</span>
+
+            <Textarea v-model="t.message" class="col-11" rows="5" :maxlength="maxLength"/>
+
+            <p class="col-12" v-if="thread?.tags?.length">
+              {{thread?.tags}}
+            </p>
+          </div>
         </template>
         <template #footer>
+          <div class="grid">
+            <span class="message-counter text-xs col-3">{{ t.message.length }} / {{maxLength()}}</span>
+            <Button icon="pi pi-images" class="col-1" severity="secondary" @click="addImage(t)" :disabled="t.files.length>1"/>
+            <input :data-toot="t.index" class="file-input" type="file" accept="image/png, image/jpeg" @change="fileSelected($event,t)" hidden="true">
+          </div>
+
           <div class="grid">
             <div class="col-6 grid" v-for="(f,fidx) in t.files">
               <Image width="100" :src="f.preview" :data-image-toot="fidx" @click.stop="removeImage($event,t)" class="col-12"/>
               <InputText v-model="f.description"  class="col-12"/>
             </div>
           </div>
+
         </template>
       </Card>
 
