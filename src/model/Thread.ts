@@ -1,13 +1,14 @@
 import Toot from '@/model/Toot';
 import {createRestAPIClient} from "masto";
 import Media from '@/model/Media';
-import {createOAuthAPIClient} from 'masto';
 
 export default class Thread{
 
     public toots : Toot[];
 
     instance : string;
+
+    public tags : string = '';
 
     constructor(instance: string) {
         this.instance = instance;
@@ -18,6 +19,7 @@ export default class Thread{
     parseJSON( json : string){
         this.toots = []
         const map = JSON.parse(json)
+        this.tags = map.tags;
         for (const t in map.toots) {
             const toot = this.newToot();
             toot.message = map.toots[t].text;
@@ -36,7 +38,8 @@ export default class Thread{
     toJSON():string{
         const json = {
             createdAt: new Date().toISOString(),
-            toots: new Array()
+            toots: new Array(),
+            tags: this.tags,
         }
         for (const t in this.toots) {
             const toot = this.toots[t]
@@ -68,13 +71,13 @@ export default class Thread{
 
     newToot(){
         const toot = new Toot(this.toots.length);
-        toot.message = '\n\n#FediThread';
+        toot.message = '';
         this.toots.push(toot);
         return toot;
     }
     newTootAfter(parent: Toot){
         const toot = new Toot(this.toots.length);
-        toot.message = '\n\n#FediThread';
+        toot.message = '';
         this.toots.splice(parent.index+1, 0, toot);
         return toot;
     }
@@ -97,7 +100,7 @@ export default class Thread{
             }
             const mediaIds = toot.files.map(f=>f.id)
             const status = await masto.v1.statuses.create({
-                status: `${toot.index+1}/${this.toots.length}\n${toot.message}`,
+                status: `${toot.index+1}/${this.toots.length}\n${toot.message}\n${this.tags}`,
                 visibility: "public",
                 inReplyToId: replyTo,
                 mediaIds:mediaIds
@@ -122,4 +125,9 @@ export default class Thread{
     setImgDescription(toot:Toot, imgIdx: number, description: string){
         toot.files[imgIdx].description = description;
     }
+
+    setTags(tag: string){
+        this.tags = tag;
+    }
+
 }
