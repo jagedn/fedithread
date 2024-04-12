@@ -90,6 +90,7 @@ export default class Thread{
         });
 
         let replyTo = '';
+        let counter = 1;
         for(const t in this.toots){
             const toot = this.toots[t]
             for(const fi in toot.files){
@@ -100,12 +101,13 @@ export default class Thread{
             }
             const mediaIds = toot.files.map(f=>f.id)
             const status = await masto.v1.statuses.create({
-                status: `${toot.index+1}/${this.toots.length}\n${toot.message}\n${this.tags}`,
+                status: `${counter}/${this.toots.length}\n${toot.message}\n${this.tags}`,
                 visibility: "public",
                 inReplyToId: replyTo,
                 mediaIds:mediaIds
             });
             replyTo = status.id;
+            counter++;
         }
     }
 
