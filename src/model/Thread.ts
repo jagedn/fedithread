@@ -19,7 +19,7 @@ export default class Thread{
     parseJSON( json : string){
         this.toots = []
         const map = JSON.parse(json)
-        this.tags = map.tags;
+        this.tags = map.tags || '';
         for (const t in map.toots) {
             const toot = this.newToot();
             toot.message = map.toots[t].text;
@@ -39,7 +39,7 @@ export default class Thread{
         const json = {
             createdAt: new Date().toISOString(),
             toots: new Array(),
-            tags: this.tags,
+            tags: this.tags || '',
         }
         for (const t in this.toots) {
             const toot = this.toots[t]
@@ -129,7 +129,7 @@ export default class Thread{
     }
 
     setTags(tag: string){
-        this.tags = tag;
+        this.tags = tag || '';
     }
 
 }
