@@ -100,6 +100,40 @@ const fileSelected= async (event :any, toot :Toot)=>{
   }
 }
 
+const pasteFunction = async (toot : Toot, pasteEvent : Event, callback : Function)=> {
+  if(pasteEvent.clipboardData == false){
+    if(typeof(callback) == "function"){
+      console.log('Undefined ')
+      callback(undefined);
+    }
+    return;
+  }
+
+  var items = pasteEvent.clipboardData.items;
+
+  if(items == undefined){
+    if(typeof(callback) == "function"){
+      callback(undefined);
+      console.log('Undefined 2')
+    }
+    return;
+  }
+
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf("image") == -1) continue;
+    const file = items[i].getAsFile();
+    try {
+      const ret = await thread.value?.uploadFile(currentUser.value?.accessToken, file, toot)
+      if( ret ){
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Media uploaded', life: 3000 });
+      }
+    }catch (e){
+      console.log("posible access token expired, relogin")
+      await router.push({name:'login'})
+    }
+  }
+}
+
 const removeImage=(event:Event, toot:Toot)=>{
   event.preventDefault();
   const image = event.target;
@@ -153,8 +187,10 @@ if (!instance.getUser()) {
 
         <template #header>
           <div class="grid">
-            <Chip icon="pi pi-plus" class="col-1 col-offset-1" severity="secondary" @click="addToot(t)"/>
+            <Chip icon="pi pi-plus" class="col-1" severity="secondary" @click="addToot(t)"/>
             <Chip icon="pi pi-minus" class="col-1" severity="secondary" v-if="idx!=0" @click="removeToot(t)"/>
+            <Button icon="pi pi-images" class="col-1" severity="secondary" @click="addImage(t)" :disabled="t.files.length>1"/>
+            <input :data-toot="t.index" class="file-input" type="file" accept="image/png, image/jpeg" @change="fileSelected($event,t)" hidden="true">
           </div>
         </template>
 
@@ -162,7 +198,7 @@ if (!instance.getUser()) {
           <div class="grid">
             <span class="text-sm col-1">{{ idx + 1 }}</span>
 
-            <Textarea v-model="t.message" class="col-11" rows="5" :maxlength="maxLength"/>
+            <Textarea v-model="t.message" class="col-11" rows="5" :maxlength="maxLength" @paste="pasteFunction(t,$event,null)" />
 
             <p class="col-12" v-if="thread?.tags?.length">
               {{thread?.tags}}
@@ -172,14 +208,27 @@ if (!instance.getUser()) {
         <template #footer>
           <div class="grid">
             <span class="message-counter text-xs col-3">{{ t.message.length }} / {{maxLength()}}</span>
-            <Button icon="pi pi-images" class="col-1" severity="secondary" @click="addImage(t)" :disabled="t.files.length>1"/>
-            <input :data-toot="t.index" class="file-input" type="file" accept="image/png, image/jpeg" @change="fileSelected($event,t)" hidden="true">
           </div>
 
           <div class="grid">
             <div class="col-6 grid" v-for="(f,fidx) in t.files">
-              <Image width="100" :src="f.preview" :data-image-toot="fidx" @click.stop="removeImage($event,t)" class="col-12"/>
-              <InputText v-model="f.description"  class="col-12"/>
+              <Image alt="Image" preview zoom-in-disabled zoom-out-disabled>
+                <template #indicatoricon>
+                  <div class="grid justify-content-center">
+                    <i class="pi pi-minus col-2" @click.stop="removeImage($event,t)" :data-image-toot="fidx"></i>
+                    <i class="pi pi-eye col-2"></i>
+                    <Textarea v-model="f.description" class="col-12" @click.stop=""/>
+                  </div>
+                </template>
+                <template #image>
+                  <img :src="f.preview" :data-image-toot="fidx" alt="image" class="col-12"/>
+                </template>
+                <template #preview="slotProps">
+                  <div class="grid">
+                    <img class="p-12"  :src="f.preview" alt="preview" :style="slotProps.style" @click="slotProps.onClick" />
+                  </div>
+                </template>
+              </Image>
             </div>
           </div>
 
