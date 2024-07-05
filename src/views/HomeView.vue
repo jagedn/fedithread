@@ -236,6 +236,6 @@ if (!instance.getUser()) {
       </Card>
 
     </div>
-    <em>Made with love by @jorge@friendica.aguilera.soy </em>
+    <em>Made with love by @fedithread@mastodon.social </em>
   </div>
 </template>
