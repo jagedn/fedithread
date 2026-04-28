@@ -195,6 +195,10 @@ watch(thread, () => {
   localStorage.setItem('draft_thread', JSON.stringify(data));
 }, { deep: true });
 
+const getRedirectUri = () => {
+  const path = window.location.pathname.replace(/\/[^\/]*$/, '');
+  return `${window.location.origin}${path}/`.replace(/\/+$/, '/');
+};
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -204,13 +208,14 @@ onMounted(async () => {
   if (code && tempAppData) {
     // Hemos vuelto del OAuth, canjeamos el código por un Token
     try {
+      const redirectUri = getRedirectUri();
       const response = await fetch(`https://${tempAppData.instance}/oauth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           client_id: tempAppData.client_id,
           client_secret: tempAppData.client_secret,
-          redirect_uri: window.location.origin,
+          redirect_uri: redirectUri,
           grant_type: 'authorization_code',
           code: code
         })
