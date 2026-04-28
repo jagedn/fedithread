@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { X, ExternalLink } from 'lucide-vue-next';
-import { Toot, Account } from '../types';
+import { X } from 'lucide-vue-next';
+import type {Toot, Account} from '../types';
 
 defineProps<{
   thread: Toot[];
