@@ -6,6 +6,11 @@ const instance = ref('');
 const loading = ref(false);
 const error = ref('');
 
+const getRedirectUri = () => {
+  const path = window.location.pathname.replace(/\/[^\/]*$/, '');
+  return `${window.location.origin}${path}/`.replace(/\/+$/, '/');
+};
+
 const handleLogin = async () => {
   if (!instance.value) return;
 
@@ -14,7 +19,7 @@ const handleLogin = async () => {
 
   // Limpiar la URL por si el usuario pone https://
   const domain = instance.value.replace(/^https?:\/\//, '').replace(/\/$/, '');
-
+  const redirectUri = getRedirectUri();
   try {
     // 1. Registrar la App en la instancia del usuario
     // Nota: En una App real, estos datos deberían ser consistentes
@@ -23,7 +28,7 @@ const handleLogin = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         client_name: 'FediThread',
-        redirect_uris: window.location.origin,
+        redirect_uris: redirectUri,
         scopes: 'read write follow',
         website: window.location.origin
       })
@@ -38,7 +43,7 @@ const handleLogin = async () => {
     }));
 
     // 2. Redirigir al OAuth
-    const authUrl = `https://${domain}/oauth/authorize?client_id=${appData.client_id}&scope=read+write+follow&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code`;
+    const authUrl = `https://${domain}/oauth/authorize?client_id=${appData.client_id}&scope=read+write+follow&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
 
     window.location.href = authUrl;
   } catch (err) {
