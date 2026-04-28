@@ -64,7 +64,7 @@ const handleLogout = () => {
   clearAuth();
   userAuth.value = null;
   accountData.value = null;
-  window.location.href = "/"; // Limpiar URL
+  window.location.href = getRedirectUri();
 };
 
 const addToot = () => {
